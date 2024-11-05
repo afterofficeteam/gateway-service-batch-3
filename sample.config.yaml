@@ -1,0 +1,2 @@
+APP_PORT: 9990
+BASE_URL_PATH: "/gateway-service"
