@@ -47,12 +47,12 @@ func (s *svc) UserRegister(req model.Users) (*uuid.UUID, error) {
 
 	req.Password = isPassword
 
-	insertOK, err := s.userStore.UserRegister(req)
+	userID, err := s.userStore.UserRegister(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return insertOK, nil
+	return userID, nil
 }
 
 func (s *svc) UserLogin(req model.UserLoginRequest) (*model.UserLogin, error) {
