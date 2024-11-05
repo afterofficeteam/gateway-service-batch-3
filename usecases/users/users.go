@@ -88,7 +88,7 @@ func (s *svc) UserLogin(req model.UserLoginRequest) (*model.UserLogin, error) {
 		return nil, err
 	}
 
-	userLogin := model.UserLogin{
+	return &model.UserLogin{
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: payload.ExpiresAt.Time,
 		RefreshToken:         refreshToken,
@@ -100,7 +100,5 @@ func (s *svc) UserLogin(req model.UserLoginRequest) (*model.UserLogin, error) {
 			CategoryPreferences: user.CategoryPreferences,
 			CreatedAt:           user.CreatedAt,
 		},
-	}
-
-	return &userLogin, nil
+	}, nil
 }

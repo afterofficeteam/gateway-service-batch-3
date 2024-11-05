@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	model "gateway-service/models"
-	"log"
 	"strings"
 
 	"github.com/google/uuid"
@@ -82,7 +81,6 @@ func (s *store) GetUserDetail(req model.Users) (*model.Users, error) {
 		FROM
 		    users
 	`
-	log.Println(req)
 
 	var queryConditions []string
 	if req.Email != "" {
