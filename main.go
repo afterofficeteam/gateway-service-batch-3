@@ -9,6 +9,7 @@ import (
 	userSvc "gateway-service/usecases/users"
 
 	"github.com/go-playground/validator"
+	"github.com/go-redis/redis/v8"
 )
 
 func main() {
@@ -29,15 +30,25 @@ func main() {
 	}
 	defer dbConn.Close()
 
+	redisConn, err := config.ConnectToRedis(config.RedisConnection{
+		Host:     cfg.RedisHost,
+		Port:     cfg.RedisPort,
+		Password: cfg.RedisPassword,
+		DB:       cfg.RedisDB,
+	})
+	if err != nil {
+		return
+	}
+
 	validator := validator.New()
 
-	routes := setupRoutes(dbConn, validator)
+	routes := setupRoutes(dbConn, validator, redisConn)
 	routes.Run(cfg.AppPort)
 }
 
-func setupRoutes(db *sql.DB, validator *validator.Validate) *routes.Routes {
+func setupRoutes(db *sql.DB, validator *validator.Validate, redis *redis.Client) *routes.Routes {
 	userStore := users.NewStore(db)
-	userSvc := userSvc.NewUserSvc(userStore)
+	userSvc := userSvc.NewUserSvc(userStore, redis)
 	userHandler := userHandler.NewHandler(userSvc, validator)
 
 	return &routes.Routes{

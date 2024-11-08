@@ -1,22 +1,29 @@
 package users
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	model "gateway-service/models"
 	"gateway-service/repository/users"
 	"gateway-service/util/middleware"
+	"log"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
 
 type svc struct {
 	userStore users.UserRepository
+	redis     *redis.Client
 }
 
-func NewUserSvc(userStore users.UserRepository) *svc {
+func NewUserSvc(userStore users.UserRepository, redis *redis.Client) *svc {
 	return &svc{
 		userStore: userStore,
+		redis:     redis,
 	}
 }
 
@@ -56,6 +63,24 @@ func (s *svc) UserRegister(req model.Users) (*uuid.UUID, error) {
 }
 
 func (s *svc) UserLogin(req model.UserLoginRequest) (*model.UserLogin, error) {
+	ctx := context.Background()
+
+	val, err := s.redis.Get(ctx, req.Username).Result()
+	if err != nil {
+		if err == redis.Nil {
+			log.Printf("Redis: Key %s not found", req.Username)
+		}
+	}
+
+	if val != "" {
+		var userLogin model.UserLogin
+		if err := json.Unmarshal([]byte(val), &userLogin); err != nil {
+			return nil, errors.Join(fmt.Errorf("error unmarshaling Redis value for %s: %v", req.Username, err))
+		}
+
+		return &userLogin, nil
+	}
+
 	user, err := s.userStore.GetUserDetail(model.Users{
 		Username: req.Username,
 	})
@@ -88,7 +113,7 @@ func (s *svc) UserLogin(req model.UserLoginRequest) (*model.UserLogin, error) {
 		return nil, err
 	}
 
-	return &model.UserLogin{
+	userLogin := model.UserLogin{
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: payload.ExpiresAt.Time,
 		RefreshToken:         refreshToken,
@@ -100,5 +125,16 @@ func (s *svc) UserLogin(req model.UserLoginRequest) (*model.UserLogin, error) {
 			CategoryPreferences: user.CategoryPreferences,
 			CreatedAt:           user.CreatedAt,
 		},
-	}, nil
+	}
+
+	userData, err := json.Marshal(userLogin)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.redis.Set(ctx, req.Username, userData, 20*time.Minute).Err(); err != nil {
+		return nil, err
+	}
+
+	return &userLogin, nil
 }

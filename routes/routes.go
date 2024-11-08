@@ -41,7 +41,7 @@ func (r *Routes) SetupRouter() {
 
 func (r *Routes) userRoutes() {
 	r.Router.HandleFunc("POST /signup", middleware.ApplyMiddleware(r.User.SignUpByEmail, middleware.EnabledCors, middleware.LoggerMiddleware()))
-	r.Router.Handle("POST /signin", middleware.ApplyMiddleware(r.User.SignInByEmail, middleware.EnabledCors, middleware.LoggerMiddleware()))
+	r.Router.HandleFunc("POST /signin", middleware.ApplyMiddleware(r.User.SignInByEmail, middleware.EnabledCors, middleware.LoggerMiddleware()))
 }
 
 func (r *Routes) Run(port string) {

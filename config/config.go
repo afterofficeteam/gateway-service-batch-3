@@ -8,20 +8,21 @@ import (
 )
 
 type Config struct {
-	AppPort      string
-	LogLevel     string
-	LogAddSource bool
-	DBHost       string
-	DBPort       int
-	DBUser       string
-	DBPassword   string
-	DBName       string
-	DBDebug      bool
-	BaseURLPath  string
-	DBSSLMode    string
-	ClientKey    string
-	ServerKey    string
-	MerchantID   string
+	AppPort       string
+	LogLevel      string
+	LogAddSource  bool
+	DBHost        string
+	DBPort        int
+	DBUser        string
+	DBPassword    string
+	DBName        string
+	DBDebug       bool
+	BaseURLPath   string
+	DBSSLMode     string
+	RedisHost     string
+	RedisPort     int
+	RedisPassword string
+	RedisDB       int
 }
 
 func LoadConfig() (*Config, error) {
@@ -37,18 +38,19 @@ func LoadConfig() (*Config, error) {
 	}
 
 	config := &Config{
-		AppPort:     viper.GetString("APP_PORT"),
-		BaseURLPath: viper.GetString("BASE_URL_PATH"),
-		DBSSLMode:   viper.GetString("DB_SSL_MODE"),
-		DBUser:      viper.GetString("DB_USER"),
-		DBHost:      viper.GetString("DB_HOST"),
-		DBPassword:  viper.GetString("DB_PASSWORD"),
-		DBName:      viper.GetString("DB_NAME"),
-		DBDebug:     viper.GetBool("DB_DEBUG"),
-		DBPort:      viper.GetInt("DB_PORT"),
-		ClientKey:   viper.GetString("CLIENT_KEY"),
-		ServerKey:   viper.GetString("SERVER_KEY"),
-		MerchantID:  viper.GetString("MERCHANT_ID"),
+		AppPort:       viper.GetString("APP_PORT"),
+		BaseURLPath:   viper.GetString("BASE_URL_PATH"),
+		DBSSLMode:     viper.GetString("DB_SSL_MODE"),
+		DBUser:        viper.GetString("DB_USER"),
+		DBHost:        viper.GetString("DB_HOST"),
+		DBPassword:    viper.GetString("DB_PASSWORD"),
+		DBName:        viper.GetString("DB_NAME"),
+		DBDebug:       viper.GetBool("DB_DEBUG"),
+		DBPort:        viper.GetInt("DB_PORT"),
+		RedisHost:     viper.GetString("REDIS_HOST"),
+		RedisPort:     viper.GetInt("REDIS_PORT"),
+		RedisPassword: viper.GetString("REDIS_PASSWORD"),
+		RedisDB:       viper.GetInt("REDIS_DB"),
 	}
 
 	return config, nil
