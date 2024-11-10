@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"gateway-service/helper"
+	"gateway-service/util/helper"
 	"net/http"
 )
 

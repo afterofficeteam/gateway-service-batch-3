@@ -8,21 +8,20 @@ import (
 )
 
 type Config struct {
-	AppPort       string
-	LogLevel      string
-	LogAddSource  bool
-	DBHost        string
-	DBPort        int
-	DBUser        string
-	DBPassword    string
-	DBName        string
-	DBDebug       bool
-	BaseURLPath   string
-	DBSSLMode     string
-	RedisHost     string
-	RedisPort     int
-	RedisPassword string
-	RedisDB       int
+	AppPort         string
+	DBHost          string
+	DBPort          int
+	DBUser          string
+	DBPassword      string
+	DBName          string
+	DBDebug         bool
+	BaseURLPath     string
+	DBSSLMode       string
+	RedisHost       string
+	RedisPort       int
+	RedisPassword   string
+	RedisDB         int
+	CartServicePort string
 }
 
 func LoadConfig() (*Config, error) {
@@ -38,19 +37,20 @@ func LoadConfig() (*Config, error) {
 	}
 
 	config := &Config{
-		AppPort:       viper.GetString("APP_PORT"),
-		BaseURLPath:   viper.GetString("BASE_URL_PATH"),
-		DBSSLMode:     viper.GetString("DB_SSL_MODE"),
-		DBUser:        viper.GetString("DB_USER"),
-		DBHost:        viper.GetString("DB_HOST"),
-		DBPassword:    viper.GetString("DB_PASSWORD"),
-		DBName:        viper.GetString("DB_NAME"),
-		DBDebug:       viper.GetBool("DB_DEBUG"),
-		DBPort:        viper.GetInt("DB_PORT"),
-		RedisHost:     viper.GetString("REDIS_HOST"),
-		RedisPort:     viper.GetInt("REDIS_PORT"),
-		RedisPassword: viper.GetString("REDIS_PASSWORD"),
-		RedisDB:       viper.GetInt("REDIS_DB"),
+		AppPort:         viper.GetString("APP_PORT"),
+		BaseURLPath:     viper.GetString("BASE_URL_PATH"),
+		DBSSLMode:       viper.GetString("DB_SSL_MODE"),
+		DBUser:          viper.GetString("DB_USER"),
+		DBHost:          viper.GetString("DB_HOST"),
+		DBPassword:      viper.GetString("DB_PASSWORD"),
+		DBName:          viper.GetString("DB_NAME"),
+		DBDebug:         viper.GetBool("DB_DEBUG"),
+		DBPort:          viper.GetInt("DB_PORT"),
+		RedisHost:       viper.GetString("REDIS_HOST"),
+		RedisPort:       viper.GetInt("REDIS_PORT"),
+		RedisPassword:   viper.GetString("REDIS_PASSWORD"),
+		RedisDB:         viper.GetInt("REDIS_DB"),
+		CartServicePort: viper.GetString("CART_SERVICE_PORT"),
 	}
 
 	return config, nil

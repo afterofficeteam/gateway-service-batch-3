@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	cart "gateway-service/handlers/cart"
 	user "gateway-service/handlers/users"
 
 	"github.com/spf13/viper"
@@ -16,6 +17,7 @@ import (
 type Routes struct {
 	Router *http.ServeMux
 	User   *user.Handler
+	Cart   *cart.Handler
 }
 
 func URLRewriter(baseURLPath string, next http.Handler) http.HandlerFunc {
@@ -37,11 +39,16 @@ func (r *Routes) SetupRouter() {
 	r.Router = http.NewServeMux()
 	r.SetupBaseURL()
 	r.userRoutes()
+	r.cartRoutes()
 }
 
 func (r *Routes) userRoutes() {
 	r.Router.HandleFunc("POST /signup", middleware.ApplyMiddleware(r.User.SignUpByEmail, middleware.EnabledCors, middleware.LoggerMiddleware()))
 	r.Router.HandleFunc("POST /signin", middleware.ApplyMiddleware(r.User.SignInByEmail, middleware.EnabledCors, middleware.LoggerMiddleware()))
+}
+
+func (r *Routes) cartRoutes() {
+	r.Router.HandleFunc("POST /cart", middleware.ApplyMiddleware(r.Cart.InsertCart, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
 }
 
 func (r *Routes) Run(port string) {

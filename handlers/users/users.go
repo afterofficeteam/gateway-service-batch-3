@@ -2,9 +2,9 @@ package users
 
 import (
 	"encoding/json"
-	"gateway-service/helper"
 	model "gateway-service/models"
 	"gateway-service/usecases/users"
+	"gateway-service/util/helper"
 	"net/http"
 
 	"github.com/go-playground/validator"
