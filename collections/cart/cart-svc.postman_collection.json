@@ -1,0 +1,54 @@
+{
+	"info": {
+		"_postman_id": "c736592a-daed-48a9-922b-ffbb53722a10",
+		"name": "cart-svc",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37021540"
+	},
+	"item": [
+		{
+			"name": "Insert cart",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZhdGFuQGFmdGVyb2ZmaWNlLmNvLmlkIiwidXNlcl9pZCI6ImExMTZjNDcyLTU2YWUtNGFiMC04MjZjLTFmMGFkOTNjYzE3OCIsInJvbGUiOiJBZG1pbiIsImlzcyI6InVzZXJfbG9naW4iLCJzdWIiOiJzaG9waWZ1biIsImV4cCI6MTczMTQ4NjE3MiwibmJmIjoxNzMxMjI2OTcyLCJpYXQiOjE3MzEyMjY5NzIsImp0aSI6ImM1ZWVmOTZhLWIxNTItNDMxZS1hYTg4LWY2ZTUwZTU5ZjAwNiJ9.woS3LAdJrhaHPqgXYD5vatpryAFxXo_fc6a3tO4jKT0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"product_id\": \"eb37d4bd-a4c1-4146-9b03-85eaa37ab90b\",\n    \"qty\": 1010\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9990/cart",
+					"host": [
+						"localhost"
+					],
+					"port": "9990",
+					"path": [
+						"cart"
+					],
+					"query": [
+						{
+							"key": "nik",
+							"value": "12345",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

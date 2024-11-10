@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "c736592a-daed-48a9-922b-ffbb53722a10",
+		"name": "user-svc",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37021540"
+	},
+	"item": [
+		{
+			"name": "Signup by email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"fatan@afteroffice.co.id\",\n    \"username\": \"fatannajuda\",\n    \"password\": \"fatannajuda\",\n    \"role\": \"Admin\",\n    \"Address\": \"Bekasi\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9990/gateway-service/signup",
+					"host": [
+						"localhost"
+					],
+					"port": "9990",
+					"path": [
+						"gateway-service",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Signin by email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"fatannajuda\",\n    \"password\": \"fatannajuda\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9990/gateway-service/signin",
+					"host": [
+						"localhost"
+					],
+					"port": "9990",
+					"path": [
+						"gateway-service",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
