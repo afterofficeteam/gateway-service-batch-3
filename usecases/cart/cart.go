@@ -2,9 +2,9 @@ package cart
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"gateway-service/proto/cart"
-	"log/slog"
 )
 
 type svc struct {
@@ -22,8 +22,7 @@ type CartSvc interface {
 func (s *svc) InsertCart(ctx context.Context, req *cart.CartInsertRequest) (*cart.CartInsertResponse, error) {
 	resp, err := s.client.InsertCart(ctx, req)
 	if err != nil {
-		slog.Any("error", err)
-		return nil, fmt.Errorf("failed to insert cart: %v", err)
+		return nil, errors.Join(fmt.Errorf("failed to insert cart: %v", err))
 	}
 
 	return resp, nil
