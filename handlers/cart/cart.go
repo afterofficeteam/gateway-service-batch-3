@@ -24,13 +24,28 @@ func (h *Handler) InsertCart(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID := middleware.GetUserID(ctx)
 
+	if userID == "" {
+		helper.HandleResponse(w, http.StatusBadRequest, "user id is required", nil)
+		return
+	}
+
 	var bReq cart.CartInsertRequest
 	if err := json.NewDecoder(r.Body).Decode(&bReq); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		helper.HandleResponse(w, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	bReq.UserId = userID
+
+	if bReq.ProductId == "" {
+		helper.HandleResponse(w, http.StatusBadRequest, "product id is required", nil)
+		return
+	}
+
+	if bReq.Qty == 0 {
+		helper.HandleResponse(w, http.StatusBadRequest, "quantity is required", nil)
+		return
+	}
 
 	bRes, err := h.cart.InsertCart(ctx, &bReq)
 	if err != nil {
