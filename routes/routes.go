@@ -28,16 +28,16 @@ func URLRewriter(baseURLPath string, next http.Handler) http.HandlerFunc {
 	}
 }
 
-func (r *Routes) SetupBaseURL() {
+func (r *Routes) setupBaseURL() {
 	baseURL := viper.GetString("BASE_URL_PATH")
 	if baseURL != "" && baseURL != "/" {
 		r.Router.HandleFunc(baseURL+"/", URLRewriter(baseURL, r.Router))
 	}
 }
 
-func (r *Routes) SetupRouter() {
+func (r *Routes) setupRouter() {
 	r.Router = http.NewServeMux()
-	r.SetupBaseURL()
+	r.setupBaseURL()
 	r.userRoutes()
 	r.cartRoutes()
 }
@@ -52,7 +52,7 @@ func (r *Routes) cartRoutes() {
 }
 
 func (r *Routes) Run(port string) {
-	r.SetupRouter()
+	r.setupRouter()
 
 	log.Printf("[Running-Success] clients on localhost on port :%s", port)
 	srv := &http.Server{
