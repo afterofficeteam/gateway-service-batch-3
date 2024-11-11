@@ -33,7 +33,7 @@ func (s *store) UserRegister(req model.Users) (*uuid.UUID, error) {
 	defer tx.Rollback()
 
 	var userID uuid.UUID
-	queryArgs := `
+	queryStatement := `
 		INSERT INTO users(
 			email,
 		    username,
@@ -54,7 +54,7 @@ func (s *store) UserRegister(req model.Users) (*uuid.UUID, error) {
 	`
 
 	if err := tx.QueryRow(
-		queryArgs,
+		queryStatement,
 		req.Email,
 		req.Username,
 		req.Role,
@@ -75,7 +75,7 @@ func (s *store) UserRegister(req model.Users) (*uuid.UUID, error) {
 }
 
 func (s *store) GetUserDetail(req model.Users) (*model.Users, error) {
-	queryArgs := `
+	queryStatement := `
 		SELECT
 			*
 		FROM
@@ -96,15 +96,15 @@ func (s *store) GetUserDetail(req model.Users) (*model.Users, error) {
 	}
 
 	if len(queryConditions) > 0 {
-		queryArgs += " WHERE " + strings.Join(queryConditions, " AND ")
+		queryStatement += " WHERE " + strings.Join(queryConditions, " AND ")
 	}
 
-	queryArgs += `
+	queryStatement += `
 		ORDER BY created_at DESC limit 1
 	`
 
 	var response model.Users
-	rows, err := s.db.Query(queryArgs)
+	rows, err := s.db.Query(queryStatement)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute query: %v", err)
 	}
@@ -124,7 +124,7 @@ func (s *store) GetUserDetail(req model.Users) (*model.Users, error) {
 			&response.Password,
 		); err != nil {
 			if err == sql.ErrNoRows {
-				return nil, fmt.Errorf("no partner found")
+				return nil, fmt.Errorf("no user found")
 			}
 			return nil, fmt.Errorf("failed to fetch user data")
 		}
