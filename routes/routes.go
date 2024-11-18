@@ -49,6 +49,7 @@ func (r *Routes) userRoutes() {
 
 func (r *Routes) cartRoutes() {
 	r.Router.HandleFunc("POST /cart", middleware.ApplyMiddleware(r.Cart.InsertCart, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
+	r.Router.HandleFunc("GET /cart/{id}", middleware.ApplyMiddleware(r.Cart.GetDetail, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
 }
 
 func (r *Routes) Run(port string) {
