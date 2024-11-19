@@ -3,9 +3,12 @@ package helper
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -26,13 +29,13 @@ type Response struct {
 	StatusCode int
 }
 
-var DefaultNetClient = &http.Client{
+var DefaultClient = &http.Client{
 	Timeout: time.Second * 10,
 }
 
 func NewNetClientRequest(url string, client *http.Client) *NetClientRequest {
 	if client == nil {
-		client = DefaultNetClient
+		client = DefaultClient
 	}
 	return &NetClientRequest{
 		NetClient:  client,
@@ -74,6 +77,12 @@ func (ncr *NetClientRequest) sendRequest(method string, load interface{}, channe
 			return
 		}
 
+		if !strings.HasPrefix(urlString, "http://") && !strings.HasPrefix(urlString, "https://") {
+			log.Printf("Invalid URL format: %v", urlString)
+			channel <- Response{Err: errors.New("invalid URL format")}
+			return
+		}
+
 		req, err := http.NewRequest(method, urlString, bytes.NewBuffer(marshalled))
 		if err != nil {
 			channel <- Response{Err: err}
@@ -108,4 +117,8 @@ func (ncr *NetClientRequest) Post(load interface{}, channel chan Response) {
 
 func (ncr *NetClientRequest) Patch(load interface{}, channel chan Response) {
 	ncr.sendRequest(http.MethodPatch, load, channel)
+}
+
+func (ncr *NetClientRequest) Delete(load interface{}, channel chan Response) {
+	ncr.sendRequest(http.MethodDelete, load, channel)
 }

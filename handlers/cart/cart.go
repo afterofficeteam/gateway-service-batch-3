@@ -58,8 +58,7 @@ func (h *Handler) InsertCart(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) GetDetail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	userID := middleware.GetUserID(ctx)
-	productID := r.PathValue("id")
+	userID, productID := middleware.GetUserID(ctx), r.PathValue("id")
 
 	bRes, err := h.cart.GetDetail(ctx, &cart.CartDetailRequest{
 		Id:        userID,
@@ -71,4 +70,22 @@ func (h *Handler) GetDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helper.HandleResponse(w, http.StatusOK, helper.SUCCESS_MESSSAGE, bRes)
+}
+
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	userID, productID := middleware.GetUserID(ctx), r.PathValue("product_id")
+
+	if userID == "" || productID == "" {
+		helper.HandleResponse(w, http.StatusBadRequest, "user id and product id cant not nil", nil)
+		return
+	}
+
+	deleteOK, err := h.cart.Delete(userID, productID)
+	if err != nil {
+		helper.HandleResponse(w, http.StatusInternalServerError, err.Error(), nil)
+		return
+	}
+
+	helper.HandleResponse(w, http.StatusOK, helper.SUCCESS_MESSSAGE, deleteOK)
 }
