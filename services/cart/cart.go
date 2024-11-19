@@ -8,7 +8,6 @@ import (
 )
 
 func Delete(userID, productID string) (*int, error) {
-	println(userID)
 	channel := make(chan helper.Response)
 	clientRequest := helper.NetClientRequest{
 		NetClient:  helper.DefaultClient,
@@ -18,11 +17,13 @@ func Delete(userID, productID string) (*int, error) {
 	clientRequest.Delete(nil, channel)
 
 	response := <-channel
-	if response.StatusCode != http.StatusOK || response.Err != nil {
+	if response.StatusCode != http.StatusOK {
 		var responseError string
 		if err := json.Unmarshal(response.Res, &responseError); err != nil {
-			return nil, errors.New(responseError)
+			return nil, err
 		}
+
+		return nil, errors.New(string(responseError))
 	}
 
 	var rowsAffected int
