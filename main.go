@@ -9,6 +9,7 @@ import (
 	"gateway-service/repository/users"
 	"gateway-service/routes"
 	userSvc "gateway-service/usecases/users"
+	"gateway-service/util/middleware"
 
 	cartHandler "gateway-service/handlers/cart"
 	cartSvc "gateway-service/usecases/cart"
@@ -19,6 +20,8 @@ import (
 )
 
 func main() {
+	go middleware.CleanupOldLimiters()
+
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		return

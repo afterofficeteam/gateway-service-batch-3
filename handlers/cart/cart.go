@@ -24,6 +24,11 @@ func (h *Handler) InsertCart(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID := middleware.GetUserID(ctx)
 
+	if limiter := middleware.GetLimiter(userID); !limiter.Allow() {
+		helper.HandleResponse(w, http.StatusTooManyRequests, "To many request, please try again later", nil)
+		return
+	}
+
 	if userID == "" {
 		helper.HandleResponse(w, http.StatusBadRequest, "user id is required", nil)
 		return
@@ -60,6 +65,11 @@ func (h *Handler) GetDetail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, productID := middleware.GetUserID(ctx), r.PathValue("id")
 
+	if limiter := middleware.GetLimiter(userID); !limiter.Allow() {
+		helper.HandleResponse(w, http.StatusTooManyRequests, "To many request, please try again later", nil)
+		return
+	}
+
 	bRes, err := h.cart.GetDetail(ctx, &cart.CartDetailRequest{
 		Id:        userID,
 		ProductId: productID,
@@ -75,6 +85,11 @@ func (h *Handler) GetDetail(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID, productID := middleware.GetUserID(ctx), r.PathValue("product_id")
+
+	if limiter := middleware.GetLimiter(userID); !limiter.Allow() {
+		helper.HandleResponse(w, http.StatusTooManyRequests, "To many request, please try again later", nil)
+		return
+	}
 
 	if userID == "" || productID == "" {
 		helper.HandleResponse(w, http.StatusBadRequest, "user id and product id cant not nil", nil)

@@ -29,6 +29,11 @@ func (h *Handler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if limiter := middleware.GetLimiter(userID); !limiter.Allow() {
+		helper.HandleResponse(w, http.StatusTooManyRequests, "To many request, please try again later", nil)
+		return
+	}
+
 	var bReq model.RequestCreateOrder
 	if err := json.NewDecoder(r.Body).Decode(&bReq); err != nil {
 		helper.HandleResponse(w, http.StatusConflict, err.Error(), nil)
