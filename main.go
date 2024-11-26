@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"gateway-service/config"
+	"gateway-service/handlers/order"
 	userHandler "gateway-service/handlers/users"
 	"gateway-service/proto/cart"
 	"gateway-service/repository/users"
@@ -65,8 +66,11 @@ func setupRoutes(db *sql.DB, validator *validator.Validate, redis *redis.Client,
 	cartSvc := cartSvc.NewSvc(cartInt)
 	cartHandler := cartHandler.NewHandler(cartSvc)
 
+	orderHandler := order.NewHandler(validator)
+
 	return &routes.Routes{
-		User: userHandler,
-		Cart: cartHandler,
+		User:  userHandler,
+		Cart:  cartHandler,
+		Order: orderHandler,
 	}
 }

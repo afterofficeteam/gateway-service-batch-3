@@ -62,15 +62,15 @@ func DebugOutput(i interface{}) {
 	case []byte:
 		json.Unmarshal(iData, &mapRes)
 		s, _ := json.MarshalIndent(mapRes, "", "\t")
-		fmt.Print(string(s))
+		fmt.Println(string(s))
 	default:
 		switch IsSlice(iData) {
 		case true:
 			s, _ := json.MarshalIndent(i, "", "\t")
-			fmt.Print(string(s))
+			fmt.Println(string(s))
 		default:
 			s, _ := json.MarshalIndent(i, "", "\t")
-			fmt.Print(string(s))
+			fmt.Println(string(s))
 		}
 	}
 }

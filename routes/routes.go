@@ -9,6 +9,7 @@ import (
 	"time"
 
 	cart "gateway-service/handlers/cart"
+	order "gateway-service/handlers/order"
 	user "gateway-service/handlers/users"
 
 	"github.com/spf13/viper"
@@ -18,6 +19,7 @@ type Routes struct {
 	Router *http.ServeMux
 	User   *user.Handler
 	Cart   *cart.Handler
+	Order  *order.Handler
 }
 
 func URLRewriter(baseURLPath string, next http.Handler) http.HandlerFunc {
@@ -40,6 +42,7 @@ func (r *Routes) setupRouter() {
 	r.setupBaseURL()
 	r.userRoutes()
 	r.cartRoutes()
+	r.orderRoutes()
 }
 
 func (r *Routes) userRoutes() {
@@ -51,6 +54,10 @@ func (r *Routes) cartRoutes() {
 	r.Router.HandleFunc("POST /cart", middleware.ApplyMiddleware(r.Cart.InsertCart, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
 	r.Router.HandleFunc("GET /cart/{id}", middleware.ApplyMiddleware(r.Cart.GetDetail, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
 	r.Router.HandleFunc("DELETE /cart/{product_id}", middleware.ApplyMiddleware(r.Cart.Delete, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
+}
+
+func (r *Routes) orderRoutes() {
+	r.Router.HandleFunc("POST /order", middleware.ApplyMiddleware(r.Order.CreateOrder, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
 }
 
 func (r *Routes) Run(port string) {
