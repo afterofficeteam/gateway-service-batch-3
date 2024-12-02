@@ -22,10 +22,43 @@ type Routes struct {
 	Order  *order.Handler
 }
 
+type RouteGroup struct {
+	Router      *http.ServeMux
+	Prefix      string
+	Middlewares []func(http.Handler) http.Handler
+}
+
+func NewRouteGroup(router *http.ServeMux, prefix string) *RouteGroup {
+	return &RouteGroup{
+		Router:      router,
+		Prefix:      prefix,
+		Middlewares: []func(http.Handler) http.Handler{},
+	}
+}
+
+func (rg *RouteGroup) Use(middlewares ...func(http.Handler) http.Handler) {
+	rg.Middlewares = append(rg.Middlewares, middlewares...)
+}
+
+func (rg *RouteGroup) HandleFunc(methodAndPath string, handler http.HandlerFunc) {
+	parts := strings.SplitN(methodAndPath, " ", 2)
+	method := parts[0]
+	path := rg.Prefix + parts[1]
+
+	finalHandler := middleware.ApplyMiddleware(handler, rg.Middlewares...)
+
+	rg.Router.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != method {
+			http.NotFound(w, r)
+			return
+		}
+		finalHandler.ServeHTTP(w, r)
+	})
+}
+
 func URLRewriter(baseURLPath string, next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.URL.Path = strings.TrimPrefix(r.URL.Path, baseURLPath)
-
 		next.ServeHTTP(w, r)
 	}
 }
@@ -40,24 +73,21 @@ func (r *Routes) setupBaseURL() {
 func (r *Routes) setupRouter() {
 	r.Router = http.NewServeMux()
 	r.setupBaseURL()
-	r.userRoutes()
-	r.cartRoutes()
-	r.orderRoutes()
-}
 
-func (r *Routes) userRoutes() {
-	r.Router.HandleFunc("POST /signup", middleware.ApplyMiddleware(r.User.SignUpByEmail, middleware.EnabledCors, middleware.LoggerMiddleware()))
-	r.Router.HandleFunc("POST /signin", middleware.ApplyMiddleware(r.User.SignInByEmail, middleware.EnabledCors, middleware.LoggerMiddleware()))
-}
+	userGroup := NewRouteGroup(r.Router, "/user")
+	userGroup.Use(middleware.EnabledCors, middleware.LoggerMiddleware())
+	userGroup.HandleFunc("POST /signup", r.User.SignUpByEmail)
+	userGroup.HandleFunc("POST /signin", r.User.SignInByEmail)
 
-func (r *Routes) cartRoutes() {
-	r.Router.HandleFunc("POST /cart", middleware.ApplyMiddleware(r.Cart.InsertCart, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
-	r.Router.HandleFunc("GET /cart/{id}", middleware.ApplyMiddleware(r.Cart.GetDetail, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
-	r.Router.HandleFunc("DELETE /cart/{product_id}", middleware.ApplyMiddleware(r.Cart.Delete, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
-}
+	cartGroup := NewRouteGroup(r.Router, "/cart")
+	cartGroup.Use(middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication)
+	cartGroup.HandleFunc("POST ", r.Cart.InsertCart)
+	cartGroup.HandleFunc("GET /{id}", r.Cart.GetDetail)
+	cartGroup.HandleFunc("DELETE /product/{product_id}", r.Cart.Delete)
 
-func (r *Routes) orderRoutes() {
-	r.Router.HandleFunc("POST /order", middleware.ApplyMiddleware(r.Order.CreateOrder, middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication))
+	orderGroup := NewRouteGroup(r.Router, "/order")
+	orderGroup.Use(middleware.EnabledCors, middleware.LoggerMiddleware(), middleware.Authentication)
+	orderGroup.HandleFunc("POST ", r.Order.CreateOrder)
 }
 
 func (r *Routes) Run(port string) {
