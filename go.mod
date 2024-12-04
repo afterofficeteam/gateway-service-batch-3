@@ -9,6 +9,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/pressly/goose v2.7.0+incompatible
+	github.com/sony/gobreaker v1.0.0
 	github.com/spf13/viper v1.19.0
 	golang.org/x/crypto v0.29.0
 	golang.org/x/time v0.5.0
